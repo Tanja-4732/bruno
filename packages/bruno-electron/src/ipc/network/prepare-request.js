@@ -70,9 +70,22 @@ const setAuthHeaders = (axiosRequest, request, collectionRoot) => {
   return axiosRequest;
 };
 
-const prepareRequest = (request, collectionRoot) => {
+/**
+ * @param {{[name: string]: string}} cookies The cookies to send with the request, may be null/undefined
+ */
+const prepareRequest = (request, collectionRoot, cookies) => {
   const headers = {};
   let contentTypeDefined = false;
+
+  console.debug('prepareRequest', request);
+
+  // cookies
+  if (cookies != null && cookies.length > 0) {
+    // Each cookie is a key-value pair of two strings, the name and the value
+    // We join them with an equals sign to get a string like "name=value"
+    // Then we join all the cookies with a semicolon to get a string like "name=value;name2=value2"
+    headers['Cookie'] = cookies.map((cookie) => cookie.join('=')).join(';');
+  }
 
   // collection headers
   each(get(collectionRoot, 'request.headers', []), (h) => {

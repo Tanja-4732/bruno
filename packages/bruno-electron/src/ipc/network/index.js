@@ -338,7 +338,7 @@ const registerNetworkIpc = (mainWindow) => {
   };
 
   // handler for sending http request
-  ipcMain.handle('send-http-request', async (event, item, collection, environment, collectionVariables) => {
+  ipcMain.handle('send-http-request', async (event, item, collection, environment, collectionVariables, cookies) => {
     const collectionUid = collection.uid;
     const collectionPath = collection.pathname;
     const cancelTokenUid = uuid();
@@ -352,9 +352,11 @@ const registerNetworkIpc = (mainWindow) => {
       cancelTokenUid
     });
 
+    console.debug('send-http-request', cookies);
+
     const collectionRoot = get(collection, 'root', {});
     const _request = item.draft ? item.draft.request : item.request;
-    const request = prepareRequest(_request, collectionRoot);
+    const request = prepareRequest(_request, collectionRoot, cookies);
     const envVars = getEnvVars(environment);
     const processEnvVars = getProcessEnvVars(collectionUid);
     const brunoConfig = getBrunoConfig(collectionUid);
